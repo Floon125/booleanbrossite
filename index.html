@@ -14,12 +14,10 @@
 
 <body>
 
-<!-- HERO -->
 <section class="hero">
   <img src="Assets/titleScreen.png" class="hero-img">
 </section>
 
-<!-- STORY -->
 <section class="card fade-in">
   <h1>What is this game?</h1>
   <p>
@@ -27,14 +25,18 @@
   </p>
 </section>
 
-<!-- INPUT -->
+<section class="card fade-in">
+<h1>Top 5 High Scores</h1>
+<ul id="leaderboard" class="scoreDisplay"></ul>
+</section>
+
 <section class="card fade-in">
   <h2>Enter Player ID</h2>
-  <input id="playerInput" type="text" placeholder="e.g. 3877" class="input"/>
+  <input id="playerInput" type="text" placeholder="e.g. 1234" class="input"/>
   <p>(Press Enter)</p>
 </section>
 
-<!-- OUTPUT + SAVE PANEL -->
+
 <section class="card fade-in hidden" id="outputBox">
 
   <pre id="output"></pre>
@@ -43,7 +45,7 @@
 
   <button class="coolbuttons" id="copyBtn">Save as Custom ID</button>
   <button class="coolbuttons" id="downloadBtn">Download Save File</button>
-  <p>You can give your ID a new number or name and use that information to search it later. To use your cloud save, download the file and paste it in this directory:</p
+  <p>You can give your ID a nickname to display on the online leaderboard. To use your cloud save, download the file and paste it in this directory:</p
   <p>"C:\Users\YOUR_USER_HERE\AppData\Roaming\Godot\app_userdata\Infectisium"</p
  <p>Make sure not to rename the file other than save.infect when in this directory</p
 
