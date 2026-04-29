@@ -2,7 +2,14 @@
     font-family: 'Pixelarri';
     src: url('Pixellari.ttf') format('truetype');
 }
-
+.coolbuttons{
+background-color:#262b44;
+color: #ffffff;
+border-radius: 8px; 
+padding: 20px;
+border: none;
+font-family: 'Pixellari', monospace;
+}
 body {
     margin: 0;
     background: #181425;
@@ -72,6 +79,9 @@ body {
 /* SMOOTH SCROLL */
 html {
     scroll-behavior: smooth;
+}
+.darktext{
+color: #838bb0;
 }
 .hidden {
     display: none;
