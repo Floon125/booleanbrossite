@@ -16,69 +16,65 @@ window.onload = function() {
     const input = document.getElementById("playerInput");
     const output = document.getElementById("output");
     const outputBox = document.getElementById("outputBox");
-    const copyBtn = document.getElementById("copyBtn");
     const newIdInput = document.getElementById("newIdInput");
 
     let currentPlayerData = null;
+    let currentPlayerId = null;
 
-    // hide output initially
+    // hide panel on load
     outputBox.classList.add("hidden");
 
-    // hide output when typing new ID
-    input.addEventListener("input", () => {
-        outputBox.classList.add("hidden");
-    });
-
+    // ENTER SEARCH
     input.addEventListener("keydown", function(e) {
 
-    if (e.key !== "Enter") return;
+        if (e.key !== "Enter") return;
 
-    const playerId = input.value.trim();
+        const playerId = input.value.trim();
 
-    if (!playerId) {
-        output.textContent = "⚠️ Enter a valid Player ID.";
-        outputBox.classList.remove("hidden");
-        return;
-    }
-
-    output.textContent = "Loading...";
-    outputBox.classList.remove("hidden");
-
-    const playerRef = firebase.database().ref("players/" + playerId);
-
-    playerRef.once("value")
-    .then(snapshot => {
-
-        const data = snapshot.val();
-
-        if (!data) {
-            currentPlayerData = null;
-            output.textContent = "❌ Player not found.";
+        if (!playerId) {
+            output.textContent = "⚠️ Enter a valid Player ID.";
+            outputBox.classList.remove("hidden");
             return;
         }
 
-        currentPlayerData = data;
-        output.textContent = JSON.stringify(data, null, 2);
-    })
-    .catch(err => {
-        output.textContent = "Error: " + err;
-    });
-});
+        output.textContent = "Loading...";
+        outputBox.classList.remove("hidden");
 
-    // COPY + RENAME SAVE
-    copyBtn.addEventListener("click", () => {
+        const playerRef = firebase.database().ref("players/" + playerId);
+
+        playerRef.once("value")
+        .then(snapshot => {
+
+            const data = snapshot.val();
+
+            if (!data) {
+                currentPlayerData = null;
+                output.textContent = "❌ Player not found.";
+                return;
+            }
+
+            currentPlayerId = playerId;
+            currentPlayerData = data;
+
+            output.textContent = JSON.stringify(data, null, 2);
+        })
+        .catch(err => {
+            output.textContent = "Error: " + err;
+        });
+    });
+
+    // COPY SAVE
+    document.getElementById("copyBtn").addEventListener("click", () => {
 
         const newId = newIdInput.value.trim();
 
         if (!currentPlayerData) {
             output.textContent = "⚠️ Load a player first.";
-            outputBox.classList.remove("hidden");
             return;
         }
 
         if (!newId) {
-            output.textContent = "⚠️ Enter a new ID or name.";
-            outputBox.classList.remove("hidden");
+            output.textContent = "⚠️ Enter a new ID.";
             return;
         }
 
@@ -94,11 +90,25 @@ window.onload = function() {
             return db.ref("players/" + newId).set(currentPlayerData);
         })
         .then(() => {
+
+            currentPlayerId = newId;
+
             output.textContent = `✅ Save copied to "${newId}"`;
         })
         .catch(err => {
             output.textContent = "Error: " + err;
         });
+    });
+
+    // DOWNLOAD SAVE FILE
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+
+        if (!currentPlayerData) {
+            output.textContent = "⚠️ No save loaded.";
+            return;
+        }
+
+        saveJSON(currentPlayerData, "save.infect");
     });
 
     // PARALLAX
@@ -111,7 +121,7 @@ window.onload = function() {
         }
     });
 
-    // FADE IN
+    // FADE-IN
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -125,3 +135,23 @@ window.onload = function() {
     });
 
 };
+
+
+// DOWNLOAD FUNCTION
+function saveJSON(data, filename = "save.infect") {
+
+    const jsonStr = JSON.stringify(data, null, 2);
+
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+
+    document.body.appendChild(a);
+    a.click();
+
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
