@@ -70,6 +70,10 @@ body {
     transform: translateY(40px) scale(0.95);
     transition: all 0.7s ease;
 }
+.scoreDisplay{
+list-style-type: decimal;
+font-size: 28px;
+}
 
 .fade-in.visible {
     opacity: 1;
