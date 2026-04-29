@@ -1,4 +1,4 @@
-window.onload = function() {
+window.onload = function () {
 
     const firebaseConfig = {
         apiKey: "AIzaSyDmvYD-OTIEezNqDv4fyGL5mslfEtoGRRE",
@@ -16,16 +16,15 @@ window.onload = function() {
     const input = document.getElementById("playerInput");
     const output = document.getElementById("output");
     const outputBox = document.getElementById("outputBox");
-    const newIdInput = document.getElementById("newIdInput");
+    const nicknameInput = document.getElementById("newIdInput"); // reused as nickname field
 
     let currentPlayerData = null;
     let currentPlayerId = null;
 
-    // hide panel on load
     outputBox.classList.add("hidden");
 
-    // ENTER SEARCH
-    input.addEventListener("keydown", function(e) {
+    // Load the player information
+    input.addEventListener("keydown", function (e) {
 
         if (e.key !== "Enter") return;
 
@@ -43,64 +42,58 @@ window.onload = function() {
         const playerRef = firebase.database().ref("players/" + playerId);
 
         playerRef.once("value")
-        .then(snapshot => {
+            .then(snapshot => {
 
-            const data = snapshot.val();
+                const data = snapshot.val();
 
-            if (!data) {
-                currentPlayerData = null;
-                output.textContent = "❌ Player not found.";
-                return;
-            }
+                if (!data) {
+                    currentPlayerData = null;
+                    output.textContent = "❌ Player not found.";
+                    return;
+                }
 
-            currentPlayerId = playerId;
-            currentPlayerData = data;
+                currentPlayerId = playerId;
+                currentPlayerData = data;
 
-            output.textContent = JSON.stringify(data, null, 2);
-        })
-        .catch(err => {
-            output.textContent = "Error: " + err;
-        });
+                output.textContent = JSON.stringify(data, null, 2);
+            })
+            .catch(err => {
+                output.textContent = "Error: " + err;
+            });
     });
 
-    // COPY SAVE
+   
     document.getElementById("copyBtn").addEventListener("click", () => {
 
-        const newId = newIdInput.value.trim();
+        const nickname = nicknameInput.value.trim();
 
-        if (!currentPlayerData) {
+        if (!currentPlayerData || !currentPlayerId) {
             output.textContent = "⚠️ Load a player first.";
             return;
         }
 
-        if (!newId) {
-            output.textContent = "⚠️ Enter a new ID.";
+        if (!nickname) {
+            output.textContent = "⚠️ Enter a nickname.";
             return;
         }
 
         const db = firebase.database();
 
-        db.ref("players/" + newId).once("value")
-        .then(snapshot => {
+ 
+        currentPlayerData.nickname = nickname;
 
-            if (snapshot.exists()) {
-                throw "⚠️ That ID already exists.";
-            }
-
-            return db.ref("players/" + newId).set(currentPlayerData);
+        db.ref("players/" + currentPlayerId).update({
+            nickname: nickname
         })
         .then(() => {
-
-            currentPlayerId = newId;
-
-            output.textContent = `✅ Save copied to "${newId}"`;
+            output.textContent = `✅ Nickname set to "${nickname}"`;
+            loadTopScores(); // refresh leaderboard
         })
         .catch(err => {
             output.textContent = "Error: " + err;
         });
     });
-
-    // DOWNLOAD SAVE FILE
+// button that downlaods
     document.getElementById("downloadBtn").addEventListener("click", () => {
 
         if (!currentPlayerData) {
@@ -111,7 +104,7 @@ window.onload = function() {
         saveJSON(currentPlayerData, "save.infect");
     });
 
-    // PARALLAX
+    // paralaxx scroll thingy
     window.addEventListener("scroll", () => {
         const y = window.scrollY;
         const hero = document.querySelector(".hero-img");
@@ -121,7 +114,7 @@ window.onload = function() {
         }
     });
 
-    // FADE-IN
+
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -134,10 +127,12 @@ window.onload = function() {
         observer.observe(el);
     });
 
+
+    loadTopScores();
 };
 
 
-// DOWNLOAD FUNCTION
+// DOWNLOAda fuunction
 function saveJSON(data, filename = "save.infect") {
 
     const jsonStr = JSON.stringify(data, null, 2);
@@ -154,4 +149,46 @@ function saveJSON(data, filename = "save.infect") {
 
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+function loadTopScores() {
+    const db = firebase.database();
+
+    db.ref("players").once("value")
+        .then(snapshot => {
+
+            if (!snapshot.exists()) return;
+
+            const data = snapshot.val();
+
+            const playersArray = Object.entries(data).map(([id, player]) => ({
+                id,
+                ...player
+            }));
+
+            const filteredPlayers = playersArray.filter(player =>
+                player.nickname && player.nickname.trim() !== ""
+            );
+
+            // sort descending by score
+            filteredPlayers.sort((a, b) => (b.highScore || 0) - (a.highScore || 0));
+
+            const top5 = filteredPlayers.slice(0, 5);
+
+            const list = document.getElementById("leaderboard");
+            list.innerHTML = "";
+
+            top5.forEach((player) => {
+                const li = document.createElement("li");
+
+                // nickname is guaranteed to exist now
+                li.textContent = `${player.nickname} : ${player.highScore || 0}`;
+
+                list.appendChild(li);
+            });
+
+        })
+        .catch(err => {
+            console.error("Leaderboard error:", err);
+        });
 }
