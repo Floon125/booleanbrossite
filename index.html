@@ -1,42 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Firebase Player Lookup</title>
+<meta charset="UTF-8">
+<title>Into the Origin</title>
 
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 
-    <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-database.js"></script>
-    <script src="index.js" rel="javascript"></script>
+<script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/6.5.0/firebase-database.js"></script>
+<script defer src="index.js"></script>
 
 </head>
 
 <body>
-</body>
 
-<div class="top">
-<img src="Assets/titleScreen.png" alt="Into the Origin Icon class="icon" width="936" height="440">
-</div>
+<!-- HERO -->
+<section class="hero">
+  <img src="Assets/titleScreen.png" class="hero-img">
+</section>
 
-<center>
-<div class="topText">
-<h1><center>What is this game you ask?</h1>
-<h3>Well friendo I'm glad you asked because Into to the Origin is an orginal indei game developed by a team of students over the course of a year to tell a fantastical sci-fi story.</h3>
-</div>
-</center>
+<!-- STORY -->
+<section class="card fade-in">
+  <h1>What is this game?</h1>
+  <p>
+Well friendo I'm glad you asked because Into to the Origin is an orginal indei game developed by a team of students over the course of a year to tell a fantastical sci-fi story.
+  </p>
+</section>
 
-<div class="backup">
-<h1>Enter Player ID</h1>
+<!-- INPUT -->
+<section class="card fade-in">
+  <h2>Enter Player ID</h2>
+  <input id="playerInput" type="text" placeholder="e.g. 3877" class="input"/>
+  <p>(Press Enter)</p>
+</section>
 
-</div>
-<div class="backup">
-<input id="playerInput" type="text" placeholder="e.g. 3877" class="input"/>
-<p>(Press Enter)</p>
-</div>
-<div class="fancyBackup">
-<pre id="output"></pre>
-</div>
+<!-- OUTPUT -->
+<section class="card fade-in">
+  <pre id="output"></pre>
+</section>
 
 </body>
 </html>
