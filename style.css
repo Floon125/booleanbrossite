@@ -73,3 +73,6 @@ body {
 html {
     scroll-behavior: smooth;
 }
+.hidden {
+    display: none;
+}
